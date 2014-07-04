@@ -1,0 +1,89 @@
+#include "iostream"
+#include "queue"
+#include "cmath"
+using namespace std;
+int fib1(int index)     //递归实现
+{
+ if(index<1)
+ {
+  return -1;
+ }
+ if(index==1 || index==2)
+  return 1;
+ return fib1(index-1)+fib1(index-2);
+}
+int fib2(int index)     //数组实现
+{
+ if(index<1)
+ {
+  return -1;
+ }
+ if(index<3)
+ {
+  return 1;
+ }
+ int *a=new int[index];
+ a[0]=a[1]=1;
+ for(int i=2;i<index;i++)
+  a[i]=a[i-1]+a[i-2];
+ int m=a[index-1];
+ delete a;         //释放内存空间
+ return m;
+}
+int fib3(int index)           //借用vector<int>实现
+{
+ if(index<1)
+ {
+  return -1;
+ }
+ vector<int> a(2,1);      //创建一个含有2个元素都为1的向量
+ a.reserve(3);
+ for(int i=2;i<index;i++)
+ {
+  a.insert(a.begin(),a.at(0)+a.at(1));
+  a.pop_back();
+ }
+ return a.at(0);
+} 
+int fib4(int index)       //队列实现
+{
+ if(index<1)
+ {
+  return -1;
+ }
+ queue<int>q;
+ q.push(1);
+ q.push(1);
+ for(int i=2;i<index;i++)
+ {
+  q.push(q.front()+q.back());
+  q.pop();
+ }
+ return q.back();
+}
+int fib5(int n)          //迭代实现
+{
+ int i,a=1,b=1,c=1;
+ if(n<1)
+ {
+  return -1;
+ }
+ for(i=2;i<n;i++)
+ {
+  c=a+b;     //辗转相加法（类似于求最大公约数的辗转相除法）
+  a=b;
+  b=c;
+ }
+ return c;
+}
+int fib6(int n)
+{
+ double gh5=sqrt((double)5);
+ return (pow((1+gh5),n)-pow((1-gh5),n))/(pow((double)2,n)*gh5);
+} 
+int main(void)
+{
+ printf("%d\n",fib3(6));
+ system("pause");
+ return 0;
+}
