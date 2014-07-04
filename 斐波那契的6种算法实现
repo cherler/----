@@ -76,7 +76,7 @@ int fib5(int n)          //迭代实现
  }
  return c;
 }
-int fib6(int n)
+int fib6(int n)//斐波那契数组的特征方程：F(n)=(1/√5)*{[(1+√5)/2]^n - [(1-√5)/2]^n}
 {
  double gh5=sqrt((double)5);
  return (pow((1+gh5),n)-pow((1-gh5),n))/(pow((double)2,n)*gh5);
