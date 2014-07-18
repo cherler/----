@@ -1,0 +1,61 @@
+一个一维整数数组，对其连续子数组进行求和，返回和最大的值。
+
+举例说明：
+数组：【1,-2,3,5，-3,2】应返回：8
+数组：【0，-2,3,5，-1,2】应返回：9
+数组【-9，-2，-3，-5，-4】应返回：-2
+
+于是有如下几种方法（代码解释）：
+
+#include<iostream>
+using namespace std;
+//using Sum[i,,,,j]=Sum[i,,,,j-1]+a[j].Time Complexity is O(n*n)
+int MaxSum1(int *a,int n){
+	int maximun=-10000000;
+	int sum;
+	for(int i=0;i<n;i++){
+		sum=0;
+		for(int j=i;j<n;j++){
+			sum+=a[j];
+			if(maximun<sum)
+				maximun=sum;
+		}
+	}
+	return maximun;
+}
+
+//using some start and All to solve this problem .Time Complexity is O(n).
+int Max(int x,int y){
+	return (x>y)?x:y;
+}
+int MaxSum2(int *a,int n){
+	int nstart,nAll;
+	nstart=a[n-1];
+	nAll=a[n-1];
+	for(int i=n-2;i>=0;i++){
+		nstart=Max(a[i],a[i]+nstart);
+		nAll=Max(nstart,nAll);
+	}
+	return nAll;
+}
+
+//not use Max()function .
+int MaxSum3(int *a,int n){
+	int nstart=a[n-1];
+	int nAll=a[n-1];
+	for(int i=n-2;i>=0;i--){
+		if(nstart<0)nstart=0;
+		nstart+=a[i];
+		if(nstart>nAll)
+			nAll=nstart;
+	}
+	return nAll;
+}
+int main(){
+	int a[10];
+	for(int i=0;i<10;i++)
+	cin>>a[i];
+	cout<<MaxSum3(a,10)<<endl;
+
+
+}
