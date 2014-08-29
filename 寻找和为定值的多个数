@@ -1,0 +1,66 @@
+/*题目描述
+输入两个整数n和sum，从数列1，2，3.......n 中随意取几个数，
+使其和等于sum，要求将其中所有的可能组合列出来
+*/
+#include<iostream>
+#include<list>
+#include<vector>
+using namespace std;
+/*解法一：
+注意到取n，和不取n个区别即可，考虑是否取第n个数的策略，可以转化为一个只和前n-1个数相关的问题。
+
+如果取第n个数，那么问题就转化为“取前n-1个数使得它们的和为sum-n”，对应的代码语句就是sumOfkNumber(sum - n, n - 1)；
+如果不取第n个数，那么问题就转化为“取前n-1个数使得他们的和为sum”，对应的代码语句为sumOfkNumber(sum, n - 1)。
+*/
+
+/*vector<int> vec1;
+void SumOfNumber(int sum, int n){
+	if (n <= 0 || sum <= 0)return;
+	if (sum > n){
+		vec1.push_back(n);
+		SumOfNumber(sum - n, n - 1);
+		vec1.pop_back();
+		SumOfNumber(sum, n - 1);
+	}
+	else
+	{
+		cout << sum;
+		for (auto iter = vec1.crbegin(); iter != vec1.crend(); iter++)
+			cout <<" "<< *iter ;
+		cout << endl;
+		
+	}
+	
+}输出的结果只是部分，而不是全部答案*/
+list<int>list1;
+void SumOfkNumber(int sum, int n)//这个程序全面，稳定。我还差点错过了人家。惭愧
+{
+	// 递归出口
+	if (n <= 0 || sum <= 0)
+		return;
+
+	// 输出找到的结果
+	if (sum == n)
+	{
+		// 反转list
+		list1.reverse();
+		for (list<int>::iterator iter = list1.begin(); iter != list1.end(); iter++)
+			cout << *iter << " + ";
+		cout << n << endl;
+		list1.reverse();
+	}
+
+	list1.push_front(n);      //典型的01背包问题
+	SumOfkNumber(sum - n, n - 1);   //“放”n，前n-1个数“填满”sum-n
+	list1.pop_front();
+	SumOfkNumber(sum, n - 1);     //不“放”n，n-1个数“填满”sum
+}
+
+//main function
+int main(){
+	int sum, n;
+	while (cin >> n >> sum){
+	SumOfkNumber(sum, n);
+}
+	return 0;
+}
