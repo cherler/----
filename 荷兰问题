@@ -1,0 +1,59 @@
+#include<iostream>
+using namespace std;
+/*问题描述
+下面是问题的正规描述： 现有n个红白蓝三种不同颜色的小球，乱序排列在一起，请通过两两交换任意两个球，使得从左至右，依次是一些红球、一些白球、一些蓝球。
+*/
+/*解法一：
+通过前面的分析得知，这个问题类似快排中partition过程，只是需要用到三个指针：一个前指针begin，一个中指针current，一个后指针end，current指针遍历整个数组序列，当
+
+current指针所指元素为0时，与begin指针所指的元素交换，而后current++，begin++ ；
+current指针所指元素为1时，不做任何交换（即球不动），而后current++ ；
+current指针所指元素为2时，与end指针所指的元素交换，而后，current指针不动，end-- 。*/
+void DutchSort1(int *a, int n){
+	int current = 0;
+	int begin = 0;
+	int end = n - 1;
+	while (current <= end){
+		if (a[current] == 0){
+			swap(a[current], a[begin]);
+			current++; begin++;
+		}
+		else if(a[current] == 1)current++;
+		else{
+			swap(a[current], a[end]);
+			end--;
+		}
+	}
+}
+/*解法二：
+快排的思想。。
+*/
+
+int DSort(int *a, int b,int e){
+	while (b <= e){
+		while ((a[b] == 0||a[b]==1) && b <= e)b++;
+		while ((a[e] == 2 || a[e] == 1) && b <= e)e--;
+		if(b<e)swap(a[b], a[e]);
+	}
+	return b;
+}
+void DutchSort2(int *a, int n){
+	int b = 0; int e = n - 1;
+	int p = DSort(a, b, e);
+	DSort(a, b, p-1);
+	DSort(a, p, e);
+}
+int main(){
+	int *a = new int[10];
+	for (int i = 0; i < 10;i++)
+	cin >> a[i];
+	DutchSort1(a, 10);
+	for (int i = 0; i < 10; i++)
+		cout << a[i];
+	cout << endl;
+	DutchSort2(a, 10);
+	for (int i = 0; i < 10; i++)
+		cout << a[i];
+	cout << endl;
+	return 0;
+}
