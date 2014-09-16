@@ -1,0 +1,176 @@
+#include<iostream>
+using namespace std;
+typedef int KeyType;
+typedef struct Node{
+	KeyType key;
+	struct Node *left;
+	struct Node *right;
+	struct Node *parent;
+}Node,*PNode;
+Node * create_node(KeyType data){//创建树节点
+	Node *pnode = NULL;
+	//int *a = new int[10];
+	pnode = new Node[sizeof(Node)];
+	pnode->key = data;
+	pnode->left = pnode->parent = pnode->right = NULL;
+	return pnode;
+}
+//往二叉查找树中插入结点  
+//插入的话，可能要改变根结点的地址，所以传的是二级指针
+void insert(PNode* root, KeyType key){
+	if (*root == NULL){
+		*root = create_node(key);
+		return;
+	}
+	if ((*root)->left==NULL&&(*root)->key > key){
+		Node *p = create_node(key);
+		p->parent = (*root);
+		(*root)->left = p;
+		return;
+		
+	}
+	if((*root)->right==NULL&&(*root)->key<key)
+	{
+		Node *p = create_node(key);
+		p->parent = (*root);
+		(*root)->right = p;
+		return;
+
+	}
+	if ((*root)->key>key){
+		insert(&(*root)->left, key);//用取地址符号&，匹配二级指针。
+	}
+	else if ((*root)->key < key)
+		insert(&(*root)->right, key);
+	else
+		return;
+}
+//搜索树
+PNode search(PNode root, KeyType key){
+	if (root == NULL)exit(1);
+	if (root->key>key)//
+		return search(root->left, key);
+	else if (root->key < key)//
+		return search(root->right, key);
+	else
+		return root;
+}
+//搜索树中值最小的
+PNode searchMin(PNode root){
+	if (root == NULL)exit(1);
+	if (root->left == NULL)return root;
+	else//搜索左子树
+		return searchMin(root->left);
+}
+//搜索树中值最大者
+PNode searchMax(PNode root){
+	if (root == NULL)exit(1);
+	if (root->right == NULL)return root;
+	else//搜索右子树
+		return searchMax(root->right);
+}
+//搜索节点的前驱节点
+PNode searchPredecessor(PNode pnode){
+	if (pnode == NULL)exit(1);
+	if (pnode->left)
+		return searchMax(pnode->left);
+	else{
+		while (pnode->parent){
+			if (pnode->parent->right == pnode)
+				break;
+			pnode = pnode->parent;
+		}
+		return pnode->parent;
+	}
+}
+//搜索节点的后驱节点
+PNode searchSuccessor(PNode pnode){
+	if (pnode == NULL)exit(1);
+	if (pnode->right)
+		return searchMin(pnode->right);
+	else{
+		while (pnode->parent){
+			if (pnode->parent->left == pnode)
+				break;
+			pnode = pnode->parent;
+		}
+		return pnode->parent;
+	}
+}
+//根据关键字删除某个结点,删除成功返回1,否则返回0  
+//如果把根结点删掉，那么要改变根结点的地址，所以传二级指针 
+int delete_node(PNode *root, KeyType key){
+	PNode p = search(*root, key);
+	if (!p)return 0;//没有此节点时
+	//被删除节点为叶子节点时
+	if (p->left == NULL&&p->right == NULL){
+		if (p->parent == NULL){
+			delete p;
+			*root = NULL;
+		}
+		else{
+			if (p->parent->left == p)
+				p->parent->left = NULL;
+			else
+				p->parent->right = NULL;
+			delete p;
+		}
+	}
+	//被删除节点只要左孩子时
+	else if (p->left&&!(p->right)){
+		p->left->parent = p->parent;
+		if (p->parent == NULL)
+			*root = p->left;
+		else if (p->parent->left == p)
+			p->parent->left = p->left;
+		else
+			p->parent->right = p->left;
+		delete p;
+	}
+	//被删除节点只有右孩子时
+	else if (p->right&&!(p->left)){
+		p->right->parent = p->parent;
+		if (p->parent == NULL)
+			*root = p->right;
+		else if (p->parent->right == p)
+			p->parent->right = p->right;
+		else
+			p->parent->left = p->right;
+		delete p;
+	}
+	//被删除节点左、右孩子都有时，可以寻找后继节点或者前驱节点。然后代替删除节点的值
+	else{
+		PNode q = searchSuccessor(p);
+		//寻找后继节点，把后继节点的值放到p节点位置，然后删除此后继节点
+		//同样也可以寻找前驱节点，做同样的操作。
+		//PNode q=searchPredeccor(p);
+		KeyType temp = q->key;
+		delete_node(root, q->key);
+		p->key = temp;
+	}
+	return 1;
+}
+//创建一个二叉查找树
+void create_tree(PNode *root, KeyType *keyarray, int length){
+	for (int i = 0; i < length; i++)
+		insert(root, keyarray[i]);
+}
+
+int main(){
+	int i;
+	PNode root = NULL;
+	KeyType nodeArray[11] = { 15, 6, 18, 3, 7, 17, 20, 2, 4, 13, 9 };
+	create_tree(&root, nodeArray, 11);
+	for (i = 0; i<2; i++)
+		delete_node(&root, nodeArray[i]);
+	//searchPredecessor(root);
+	//searchSuccessor(root);
+	//searchMin(root);
+	//searchMax(root);
+	printf("%d\n", searchPredecessor(root)->key);
+	printf("%d\n", searchSuccessor(root)->key);
+	printf("%d\n", searchMin(root)->key);
+	printf("%d\n", searchMax(root)->key);
+	printf("%d\n", search(root, 13)->key);
+	return 0;
+}
